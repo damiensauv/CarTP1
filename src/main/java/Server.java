@@ -14,27 +14,39 @@ public class Server {
         try {
             p = new Protocole();
             ps = new ServerSocket(4000);
-            Socket as = ps.accept();
-            System.out.println("Connexion établie.");
 
             while (true) {
+                Socket as = ps.accept();
+                System.out.println("Connexion établie.");
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(as.getInputStream()));
-                DataOutputStream out = new DataOutputStream(as.getOutputStream());
+                while (true) {
 
-                String msg = in.readLine();
-                System.out.println("Message reçu : " + msg);
-                if (!msg.equals("exit")) {
-                    int ret = p.Protocole(msg);
-                    String response = ret + "\n";
-                    out.writeBytes(response);
-                    System.out.println("Réponse envoyée.");
-                } else {
-                    System.out.println("Exit Server");
-                    as.close();
-                    return;
+                    BufferedReader in = new BufferedReader(new InputStreamReader(as.getInputStream()));
+                    DataOutputStream out = new DataOutputStream(as.getOutputStream());
+
+                    String msg = in.readLine();
+                    if (msg == null) {
+                        System.out.println("Msg null, client surement deconnecter, reset de la pile");
+                        p.resetPile();
+                        break;
+                    }
+
+                    System.out.println("Message reçu : " + msg);
+                    if (!msg.equals("exit")) {
+                        int ret = p.Protocole(msg);
+                        String response = ret + "\n";
+                        out.writeBytes(response);
+                        System.out.println("Réponse envoyée.");
+                    } else {
+                        System.out.println("Client deconnecter, Reset de la pile");
+                        p.resetPile();
+                        break;
+                    }
                 }
+
             }
+
+
         } catch (IOException ex) {
             System.exit(-1);
         } catch (ArithmeticException e) {

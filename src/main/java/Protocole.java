@@ -36,4 +36,8 @@ public class Protocole {
         return pile;
     }
 
+    void resetPile(){
+        pile = 0;
+    }
+
 }
